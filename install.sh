@@ -28,5 +28,5 @@ curl -L -o /tmp/master.zip http://github.com/uptick/bootstrap-public/zipball/mas
 unzip /tmp/master.zip -d /tmp/bootstrap
 
 cd /tmp/bootstrap/*/
-ls
 
+bash bootstrap.sh
