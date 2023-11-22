@@ -16,3 +16,6 @@ python3 -m pip install ansible > /dev/null
 
 echo "3) Running ansible playbook"
 python3 -m ansible playbook main.yml --ask-become-pass
+
+echo "4) Executing private bootstrap script"
+bash ~/bootstrap/bootstrap.sh
