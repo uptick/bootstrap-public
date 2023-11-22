@@ -8,6 +8,8 @@ else
     ssh-keygen -t rsa -f ~/.ssh/id_rsa
 fi
 
+export PATH==/opt/homebrew/bin:/opt/homebrew/sbin:$PATH
+
 echo "1) Installing xcode"
 xcode-select --install || true > /dev/null
 
@@ -18,4 +20,4 @@ echo "3) Running ansible playbook"
 python3 -m ansible playbook main.yml --ask-become-pass
 
 echo "4) Executing private bootstrap script"
-bash ~/bootstrap/bootstrap.sh
+cd ~/bootstrap/ && zsh ~/bootstrap/bootstrap.sh

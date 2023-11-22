@@ -2,7 +2,7 @@
   hosts: localhost
   gather_facts: true
   vars_files:
-  - default.config.yml
+  - default_config.yml
 
   tasks:
   - name: Check if Homebrew is installed
@@ -16,11 +16,11 @@
     become: false
 
   - name: Update Homebrew
-    command: "/opt/homebrew/bin/brew update"
+    shell: /opt/homebrew/bin/brew update
     when: not brew_installed.stat.exists
 
-  - name: Upgrade Homebrew packages
-    command: "/opt/homebrew/bin/brew upgrade"
+  - name: Upgrade Homebrew
+    shell: /opt/homebrew/bin/brew upgrade
     when: not brew_installed.stat.exists
 
   - name: Add custom homebrew repos
@@ -43,7 +43,7 @@
     loop: "{{ homebrew_packages }}"
 
   - name: Set chrome as default browser
-    cmd: defaultbrowser chrome
+    shell: defaultbrowser chrome
 
   - name: Check if github is installed
     shell: gh auth status
@@ -55,6 +55,11 @@
     async: 100
     poll: 0
     register: gh_login
+    when: gh_status is failed
+
+  - name: open browser to device
+    shell: https://github.com/login/device
+    async: 0
     when: gh_status is failed
 
   - name: gh_login
@@ -76,7 +81,7 @@
     when: gh_status is failed
 
   - name: Copy ssh key to profile
-    cmd: gh ssh-key add -t "uptick-laptop" --type "authentication" ~/.ssh/id_rsa.pub
+    shell: gh ssh-key add -t "uptick-laptop" --type "authentication" ~/.ssh/id_rsa.pub
 
   - name: Clone full bootstrap repo
     git:
