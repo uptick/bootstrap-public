@@ -58,7 +58,7 @@
     when: gh_status is failed
 
   - name: open browser to device
-    shell: https://github.com/login/device
+    shell: open -a "Google Chrome" https://github.com/login/device
     async: 0
     when: gh_status is failed
 
