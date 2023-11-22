@@ -1,0 +1,79 @@
+- name: Set up mac. Install git, setup github, clone private bootstrap repo and initialize it.
+  hosts: localhost
+  gather_facts: true
+  vars_files:
+  - default.config.yml
+
+  tasks:
+  - name: Check if Homebrew is installed
+    stat:
+      path: /opt/homebrew/bin/brew
+    register: brew_installed
+
+  - name: Install Homebrew
+    shell: NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    when: not brew_installed.stat.exists
+    become: false
+
+  - name: Update Homebrew
+    command: "/opt/homebrew/bin/brew update"
+    when: not brew_installed.stat.exists
+
+  - name: Upgrade Homebrew packages
+    command: "/opt/homebrew/bin/brew upgrade"
+    when: not brew_installed.stat.exists
+
+  - name: Add custom homebrew repos
+    community.general.homebrew_tap:
+      name: [
+        heroku/brew,
+        homebrew/cask-versions
+      ]
+
+  - name: Install core packages via brew casks
+    community.general.homebrew_cask:
+      name: "{{ item }}"
+    ignore_errors: true
+    loop: "{{ homebrew_casks}}"
+
+  - name: Install brew packages
+    homebrew:
+      name: "{{ item }}"
+      state: present
+    loop: "{{ homebrew_packages }}"
+
+  - name: Set chrome as default browser
+    cmd: defaultbrowser chrome
+
+  - name: Check if github is installed
+    shell: gh auth status
+    register: gh_status
+    ignore_errors: true
+
+  - name: gh_login
+    shell: gh auth status || yes | ((gh auth login -h github.com -s  admin:public_key -w -p ssh) 2> /tmp/out)
+    async: 100
+    poll: 0
+    register: gh_login
+    when: gh_status is failed
+
+  - name: gh_login
+    shell: sleep 1 && cat /tmp/out
+    register: gh
+    when: gh_status is failed
+
+  - name: echo output
+    debug: var=gh.stdout_lines
+    when: gh_status is failed
+
+  - name: Waiting on github login to finish
+    async_status:
+      jid: "{{ gh_login.ansible_job_id }}"
+    register: job_result
+    until: job_result.finished
+    retries: 100
+    delay: 5
+    when: gh_status is failed
+
+  - name: Copy ssh key to profile
+    command: gh ssh-key add -t "uptick-laptop" --type "authentication" ~/.ssh/id_rsa.pub
