@@ -29,4 +29,6 @@ unzip /tmp/master.zip -d /tmp/bootstrap
 
 cd /tmp/bootstrap/*/
 
+export PATH=/opt/homebrew/bin:/opt/homebrew/sbin:$PATH
+
 bash bootstrap.sh
