@@ -23,12 +23,40 @@ sleep 1
 
 echo "Fetching our bootstrap repository ..."
 
-curl -L -o /tmp/master.zip http://github.com/uptick/bootstrap-public/zipball/master/
-
-unzip /tmp/master.zip -d /tmp/bootstrap
-
-cd /tmp/bootstrap/*/
+curl -L -o /tmp/master.zip http://github.com/uptick/bootstrap-public/zipball/master/ > /dev/null
 
 export PATH=/opt/homebrew/bin:/opt/homebrew/sbin:$PATH
 
-bash bootstrap.sh
+rm -rf /tmp/bootstrap || true
+
+unzip /tmp/master.zip -d /tmp/bootstrap > /dev/null
+
+cd /tmp/bootstrap/*/
+
+if [ -e ~/.ssh/id_rsa ]; then
+    echo "The id_rsa key exists."
+else
+    echo "The id_rsa key does not exist."
+    ssh-keygen -t rsa -f ~/.ssh/id_rsa
+fi
+
+
+echo "1) Installing xcode"
+xcode-select --install || true > /dev/null
+
+echo "2) Installing ansible"
+while ! python3 -m pip install ansible > /dev/null; do
+    echo "Press [Enter] to continue after xcode-select is installed. Required for ansible"
+    read
+done
+
+echo "3) Executing private bootstrap script"
+python3 read_user_config.py
+
+
+echo "4) Running ansible playbook"
+python3 -m ansible playbook main.yml --ask-become-pass
+
+
+cd ~/bootstrap/
+zsh ~/bootstrap/bootstrap.sh
