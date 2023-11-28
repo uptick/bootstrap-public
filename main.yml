@@ -5,24 +5,6 @@
   - default_config.yml
 
   tasks:
-  - name: Check if Homebrew is installed
-    stat:
-      path: /opt/homebrew/bin/brew
-    register: brew_installed
-
-  - name: Install Homebrew
-    shell: NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    when: not brew_installed.stat.exists
-    become: false
-
-  - name: Update Homebrew
-    shell: /opt/homebrew/bin/brew update
-    when: not brew_installed.stat.exists
-
-  - name: Upgrade Homebrew
-    shell: /opt/homebrew/bin/brew upgrade
-    when: not brew_installed.stat.exists
-
   - name: Add custom homebrew repos
     community.general.homebrew_tap:
       name: [

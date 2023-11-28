@@ -57,6 +57,4 @@ python3 read_user_config.py
 echo "4) Running ansible playbook"
 python3 -m ansible playbook main.yml --ask-become-pass
 
-
-cd ~/bootstrap/
-zsh ~/bootstrap/bootstrap.sh
+cd ~/bootstrap && zsh bootstrap.sh
