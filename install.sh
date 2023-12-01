@@ -66,6 +66,7 @@ else
     echo "The ssh key does not exist."
     ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519
 fi
+ssh-add ~/.ssh/id_ed25519
 
 echo "5) Reading user settings"
 python3 read_user_config.py
