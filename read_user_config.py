@@ -25,7 +25,7 @@ def read_user_input() -> dict:
     full_name = input(f"Your full name [default: {default_name}]?").strip() or default_name
     email = input(f"Your full work email [default: {default_email}]: ").strip().lower() or default_email
 
-    folder = input("Your prefered base directory for work git repositories [default: ~/dev]: ").strip().lower() or "~/dev"
+    folder = input("Your prefered base directory for work git repositories [default: ~/dev]: ").strip() or "~/dev"
 
     folder_path = pathlib.Path(folder).expanduser().absolute()
     folder_path.mkdir(parents=True, exist_ok=True)
