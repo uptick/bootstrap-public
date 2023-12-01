@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/usr/bin/env zsh
 # Our public boootstrap entry point
 set -e
 
