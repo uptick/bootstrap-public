@@ -71,7 +71,7 @@ ssh-add ~/.ssh/id_ed25519
 echo "5) Reading user settings"
 python3 read_user_config.py
 
-echo "6) Running ansible playbook"
+echo "6) Running ansible playbook. When it asks for `BECOME passwowrd:` please enter your mac user password. This is required for sudo access."
 python3 -m ansible playbook main.yml --ask-become-pass
 
 echo "7) Running the second part of the bootstrap script"
