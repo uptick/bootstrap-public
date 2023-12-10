@@ -20,12 +20,14 @@ def guess_name():
 def read_user_config() -> dict:
     return json.loads(config_file.read_text())
 
-def read_user_input() -> dict:
-    default_name, default_email = guess_name()
+def read_user_input(defaults) -> dict:
+    default_name = defaults["full_name"]
+    default_email = defaults["email"]
+    default_git_path = defaults["git_path"]
     full_name = input(f"Your full name [default: {default_name}]?").strip() or default_name
     email = input(f"Your full work email [default: {default_email}]: ").strip().lower() or default_email
 
-    folder = input("Your prefered base directory for work git repositories [default: ~/dev]: ").strip().lower() or "~/dev"
+    folder = input(f"Your prefered base directory for work git repositories [default: {default_git_path}]: ").strip() or default_git_path
 
     folder_path = pathlib.Path(folder).expanduser().absolute()
     folder_path.mkdir(parents=True, exist_ok=True)
@@ -37,7 +39,12 @@ def read_user_input() -> dict:
         "git_path": git_path
     }
 
-config = read_user_input()
+try:
+    current_config = read_user_config()
+    config = read_user_input(current_config)
+except FileNotFoundError:
+    default_name, default_email = guess_name()
+    config = read_user_input(defaults={"full_name": default_name, "email": default_email, "git_path": "~/dev"})
 
 config_file.write_text(json.dumps(config, indent=2))
 

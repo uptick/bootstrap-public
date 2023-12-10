@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/usr/bin/env zsh
 # Our public boootstrap entry point
 set -e
 
@@ -33,28 +33,46 @@ unzip /tmp/master.zip -d /tmp/bootstrap > /dev/null
 
 cd /tmp/bootstrap/*/
 
-if [ -e ~/.ssh/id_rsa ]; then
-    echo "The id_rsa key exists."
-else
-    echo "The id_rsa key does not exist."
-    ssh-keygen -t rsa -f ~/.ssh/id_rsa
-fi
-
-
 echo "1) Installing xcode"
 xcode-select --install || true > /dev/null
 
 echo "2) Installing ansible"
+
 while ! python3 -m pip install ansible > /dev/null; do
     echo "Press [Enter] to continue after xcode-select is installed. Required for ansible"
     read
 done
 
-echo "3) Executing private bootstrap script"
+function install_brew() {
+    if [ -e /opt/homebrew/bin/brew ]; then
+        echo "Homebrew is already installed."
+    else
+        echo "Installing Homebrew."
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        brew update
+        brew upgrade
+    fi
+}
+
+echo "3) Installing home brew";
+
+install_brew();
+
+echo "4) Generating ssh key";
+
+if [ -e ~/.ssh/id_ed25519.pub ]; then
+    echo "The ssh key exists."
+else
+    echo "The ssh key does not exist."
+    ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519
+fi
+ssh-add ~/.ssh/id_ed25519
+
+echo "5) Reading user settings"
 python3 read_user_config.py
 
-
-echo "4) Running ansible playbook"
+echo "6) Running ansible playbook"
 python3 -m ansible playbook main.yml --ask-become-pass
 
+echo "7) Running the second part of the bootstrap script"
 cd ~/bootstrap && zsh bootstrap.sh

@@ -63,7 +63,7 @@
     when: gh_status is failed
 
   - name: Copy ssh key to profile
-    shell: gh ssh-key add -t "uptick-laptop" --type "authentication" ~/.ssh/id_rsa.pub
+    shell: gh ssh-key add -t "uptick-laptop" --type "authentication" ~/.ssh/id_ed25519.pub
 
   - name: Clone full bootstrap repo
     git:
