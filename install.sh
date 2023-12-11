@@ -49,8 +49,9 @@ function install_brew() {
     else
         echo "Installing Homebrew."
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-        brew update
-        brew upgrade
+        eval $(/opt/homebrew/bin/brew shellenv)
+        /opt/homebrew/bin/brew update
+        /opt/homebrew/bin/brew upgrade
     fi
 }
 
