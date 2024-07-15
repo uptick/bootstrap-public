@@ -33,7 +33,7 @@
 
   - name: gh_login
     shell: gh auth status || yes | ((gh auth login -h github.com -s  admin:public_key -w -p ssh) 2> /tmp/out)
-    async: 100
+    async: 300
     poll: 0
     register: gh_login
     when: gh_status is failed

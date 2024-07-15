@@ -57,7 +57,7 @@ function install_brew() {
 
 echo "3) Installing home brew";
 
-install_brew();
+install_brew
 
 echo "4) Generating ssh key";
 
