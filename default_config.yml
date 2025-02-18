@@ -1,7 +1,0 @@
----
-homebrew_packages:
-  - gh
-  - defaultbrowser
-
-homebrew_casks:
-  - google-chrome
